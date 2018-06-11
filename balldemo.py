@@ -8,9 +8,6 @@
 import time
 from neopixel import *
 import argparse
-import random
-import math
-import numpy as np
 
 # LED strip configuration:
 LED_COUNT      = 924      # Number of LED pixels.
@@ -66,44 +63,20 @@ def rainbowCycle(strip, wait_ms=20, iterations=5):
     """Draw rainbow that uniformly distributes itself across all pixels."""
     for j in range(256*iterations):
         for i in range(strip.numPixels()):
-            strip.setPixelColor(i, wheel((int(i * 256 / strip.numPixels()) + j) & 255))
+            strip.setPixelColor(i, wheel((int(i * 256 / strip.numPixels()) + j) &  255))
         strip.show()
         time.sleep(wait_ms/1000.0)
 
 def theaterChaseRainbow(strip, wait_ms=50):
     """Rainbow movie theater light style chaser animation."""
-    for j in range(256):
+    for j in range(64):
         for q in range(3):
             for i in range(0, strip.numPixels(), 3):
-                strip.setPixelColor(i+q, wheel((i+j) % 255))
+                strip.setPixelColor(i+q, wheel((i+j) % 256))
             strip.show()
             time.sleep(wait_ms/1000.0)
             for i in range(0, strip.numPixels(), 3):
                 strip.setPixelColor(i+q, 0)
-
-def fireColor(intensity): #make a color palete going from red through yellow to white
-    i = int(intensity)
-    if i < 0:
-        return Color(0,0,0)
-    elif i < 255:
-        return Color(0, i, 0)
-    elif i < 510:
-        return Color(0, 255, i-255)
-    elif i < 765:
-        return Color(i-510, 255, 255)
-    else:
-        return Color(255, 255, 255)
-    
-def leg(strip, number, bottom, top, color): #set value for a range of pixels on a given leg
-    for p in range(bottom, top):
-        strip.setPixelColor(114-p+5*number, color)
-        strip.setPixelColor(115+p+5*number, color)
-        strip.setPixelColor(340+p+32*number, color)
-
-def window(strip, number, color): #set pixels in a given window 
-    for p in range(18):
-        strip.setPixelColor(p+number*18, color)
-
 
 def windowCycle(strip, color, wait_ms=200, iterations=5):
     """Light each window in sequence"""
@@ -154,6 +127,16 @@ def theaterChaseRainbowDouble(strip, wait_ms=50):
                 strip.setPixelColor(i+q, 0)
                 strip.setPixelColor(i+q+1, 0)
 
+def window(strip, number, color):
+    for p in range(18):
+        strip.setPixelColor(p+18*number, color)
+
+def leg(strip, number, bottom, top, color):
+    for p in range(bottom, top):
+        strip.setPixelColor(114-p+50*number, color)
+        strip.setPixelColor(115+p+50*number, color)
+        strip.setPixelColor(340+p+32*number, color)
+
 def legsAll(strip, bottom, top, color):
     for number in range(5):
         leg(strip, number, bottom, top, color)
@@ -175,6 +158,18 @@ def rotate(strip, color, wait_ms=50, iterations=50):
         strip.show()
         time.sleep(wait_ms/1000.0)
 
+def fireColor(intensity):
+    i = int(intensity)
+    if i < 0:
+        return Color(0, 0, 0)
+    elif i < 256:
+        return Color(0, i, 0)
+    elif i < 510:
+        return Color(0, 255, i-255)
+    elif i < 765:
+        return Color(i, 255, 255)
+    else:
+        return Color(255, 255, 255)
 
 def fireLegs(strip, wait_ms=10):
     for i in range(250):
@@ -183,32 +178,7 @@ def fireLegs(strip, wait_ms=10):
         strip.show()
         time.sleep(wait_ms/1000.0)
 
-def sparkle(strip, wait_ms = 10, iterations = 2000):
-    spark = [0]*924
-    for i in range(iterations):
-        if random.random() < 0.1:
-            spark[random.randint(0,924)] = 255.0
-        spark[:] = [x*0.9 for x in spark]
-        for p in range(924):
-            strip.setPixelColor(p, Color(int(spark[p]), int(spark[p]), int(spark[p])))
-        strip.show()
-        time.sleep(wait_ms/1000.0)
-  
-def rotationMatrix(axis, theta):
-    """
-    Return the rotation matrix associated with counterclockwise rotation about
-    the given axis by theta radians.
-    """
-    axis = np.asarray(axis)
-    axis = axis/math.sqrt(np.dot(axis, axis))
-    a = math.cos(theta/2.0)
-    b, c, d = -axis*math.sin(theta/2.0)
-    aa, bb, cc, dd = a*a, b*b, c*c, d*d
-    bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
-    return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
-                     [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
-                     [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
-        
+
 # Main program logic follows:
 if __name__ == '__main__':
     # Process arguments
@@ -226,66 +196,8 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
 
     try:
-        
-         #calculate pixel positions on startup to speed up program later
-        X = [0]*924
-        Y = [0]*924
-        Z = [0]*924
-        v = math.arctan(1/2)  #tilt angle of the tilted great circles
-        vz = math.pi()*2/5 #72 degrees rotation symmetry about z-axis
-        
-        z_matrix = rotationMatrix([0,0,1],vz)
-        tilt_matrix = rotationMatrix([1,0,0], v) 
-        
-        for number in range(5): 
-            
-            for p in range(25): #legs
-                X[114-p+50*number] = (3-0.07*p)*math.sin(number*vz)-(0.008*p)*math.cos(number*vz)
-                Y[114-p+50*number] = (3-0.07*p)*math.cos(number*vz)+(0.008*p)*math.sin(number*vz)
-                Z[114-p+50*number] = 0.07*p
-                X[114+p+50*number] = (3-0.07*p)*math.sin(number*vz)+(0.008*p)*math.cos(number*vz)
-                Y[114+p+50*number] = (3-0.07*p)*math.cos(number*vz)-(0.008*p)*math.sin(number*vz)
-                Z[114+p+50*number] = 0.07*p
-                X[340+p+32*number] = (3-0.075*p)*math.sin(number*vz)
-                Y[340+p+32*number] = (3-0.075*p)*math.cos(number*vz)
-                Z[340+p+32*number] = 0.06*p
-                
-            for p in range(7): #lower ring
-                vector = [math.cos(p*math.pi()*2/78.5),math.sin(p*math.pi()*2/78.5),0]
-                vector = np.dot(tilt_matrix, vector)
-                for i in range(number):
-                    vector = np.det(z_matrix, vector)
-                X[365+p+32*number] = vector[0]
-                Y[365+p+32*number] = vector[1]
-                Z[365+p+32*number] = vector[2] + 3.5
-            
-            for p in range(69): #great circles
-                vector = [1.25*math.cos(p*math.pi()*2/78.5),1.25*math.sin(p*math.pi()*2/78.5),0]
-                vector = np.dot(tilt_matrix, vector)
-                for i in range(number):
-                    vector = np.det(z_matrix, vector)
-                X[500+p+69*number] = vector[0]
-                Y[500+p+69*number] = vector[1]
-                Z[500+p+69*number] = vector[2] + 3.5 
-        
-            for p in range(18): #windows
-                vector = [0.3*math.cos(p*math.pi()*2/18),0.3*math.sin(p*math.pi()*2/18),1.25]
-                vector = np.dot(tilt_matrix, vector)
-                for i in range(number):
-                    vector = np.det(z_matrix, vector)
-                X[p+18*number] = vector[0]
-                Y[p+18*number] = vector[1]
-                Z[p+18*number] = vector[2] + 3.5
-                
-            
-            
-                
-        for p in range(79): #equator (only one of these)
-            
-            X[845+p] = 2.5*math.sin(math.pi()*p/78.5*2)
-            Y[845+p] = 2.5*math.cos(math.pi()*p/78.5*2)
-            Z[845+p] = 3.5
-        
+        clear(strip)
+        time.sleep(30)
         while True:
 
           #  print ('Color wipe animations.')
@@ -300,8 +212,6 @@ if __name__ == '__main__':
           #  rainbow(strip)
           #  rainbowCycle(strip)
           #  theaterChaseRainbow(strip)
-            print('sparkle')
-            sparkle(strip)
             print('windowcycle blue')
             windowCycle(strip, Color(255, 0, 0))
             print('windowcycly green')
@@ -329,4 +239,3 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         if args.clear:
             colorWipe(strip, Color(0,0,0), 10)
-
