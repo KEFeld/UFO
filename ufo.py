@@ -11,6 +11,7 @@ import argparse
 import random
 import math
 import numpy as np
+import csv
 
 # LED strip configuration:
 LED_COUNT      = 924      # Number of LED pixels.
@@ -96,8 +97,8 @@ def fireColor(intensity): #make a color palete going from red through yellow to 
     
 def leg(strip, number, bottom, top, color): #set value for a range of pixels on a given leg
     for p in range(bottom, top):
-        strip.setPixelColor(114-p+5*number, color)
-        strip.setPixelColor(115+p+5*number, color)
+        strip.setPixelColor(114-p+50*number, color)
+        strip.setPixelColor(115+p+50*number, color)
         strip.setPixelColor(340+p+32*number, color)
 
 def window(strip, number, color): #set pixels in a given window 
@@ -183,11 +184,13 @@ def fireLegs(strip, wait_ms=10):
         strip.show()
         time.sleep(wait_ms/1000.0)
 
-def sparkle(strip, wait_ms = 10, iterations = 2000):
+def sparkle(strip, wait_ms = 10, iterations = 200):
     spark = [0]*924
     for i in range(iterations):
-        if random.random() < 0.1:
-            spark[random.randint(0,924)] = 255.0
+        if random.random() < 0.2:
+            spark[random.randint(0,923)] = 255.0
+        if random.random() < 0.2:
+            spark[random.randint(0,923)] = 255.0
         spark[:] = [x*0.9 for x in spark]
         for p in range(924):
             strip.setPixelColor(p, Color(int(spark[p]), int(spark[p]), int(spark[p])))
@@ -208,6 +211,16 @@ def rotationMatrix(axis, theta):
     return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
                      [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
                      [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
+                     
+def fillUp(strip, color, Z, wait_ms = 10):
+    for h in range(700):
+        for p in range(924):
+            if Z[p] < (h-300)*0.01:
+                strip.setPixelColor(p, color)
+            else:
+                strip.setPixelColor(p, 0)
+        strip.show()
+        time.sleep(wait_ms/1000.0)
         
 # Main program logic follows:
 if __name__ == '__main__':
@@ -231,61 +244,69 @@ if __name__ == '__main__':
         X = [0]*924
         Y = [0]*924
         Z = [0]*924
-        v = math.arctan(1/2)  #tilt angle of the tilted great circles
-        vz = math.pi()*2/5 #72 degrees rotation symmetry about z-axis
+        v = -1.10714871779  #tilt angle of the tilted great circles (pi/2-arctan(1/2))
+        vz = -math.pi*2/5 #72 degrees rotation symmetry about z-axis
         
         z_matrix = rotationMatrix([0,0,1],vz)
+        print(z_matrix)
         tilt_matrix = rotationMatrix([1,0,0], v) 
+        print(v)
+        print(tilt_matrix)
         
         for number in range(5): 
             
             for p in range(25): #legs
-                X[114-p+50*number] = (3-0.07*p)*math.sin(number*vz)-(0.008*p)*math.cos(number*vz)
-                Y[114-p+50*number] = (3-0.07*p)*math.cos(number*vz)+(0.008*p)*math.sin(number*vz)
+                X[114-p+50*number] = (2.75-0.07*p)*math.sin((0.5-number)*vz)-(0.008*p+0.1)*math.cos((0.5-number)*vz)
+                Y[114-p+50*number] = (2.75-0.07*p)*math.cos((0.5-number)*vz)+(0.008*p+0.1)*math.sin((0.5-number)*vz)
                 Z[114-p+50*number] = 0.07*p
-                X[114+p+50*number] = (3-0.07*p)*math.sin(number*vz)+(0.008*p)*math.cos(number*vz)
-                Y[114+p+50*number] = (3-0.07*p)*math.cos(number*vz)-(0.008*p)*math.sin(number*vz)
-                Z[114+p+50*number] = 0.07*p
-                X[340+p+32*number] = (3-0.075*p)*math.sin(number*vz)
-                Y[340+p+32*number] = (3-0.075*p)*math.cos(number*vz)
+                X[115+p+50*number] = (2.75-0.07*p)*math.sin((0.5-number)*vz)+(0.008*p+0.1)*math.cos((0.5-number)*vz)
+                Y[115+p+50*number] = (2.75-0.07*p)*math.cos((0.5-number)*vz)-(0.008*p+0.1)*math.sin((0.5-number)*vz)
+                Z[115+p+50*number] = 0.07*p
+                X[340+p+32*number] = (2.65-0.08*p)*math.sin((0.5-number)*vz)
+                Y[340+p+32*number] = (2.65-0.08*p)*math.cos((0.5-number)*vz)
                 Z[340+p+32*number] = 0.06*p
                 
             for p in range(7): #lower ring
-                vector = [math.cos(p*math.pi()*2/78.5),math.sin(p*math.pi()*2/78.5),0]
+                vector = [1.25*math.sin((p-3)*math.pi*2/78.5),1.25*math.cos((p-3)*math.pi*2/78.5),0]
                 vector = np.dot(tilt_matrix, vector)
                 for i in range(number):
-                    vector = np.det(z_matrix, vector)
+                    vector = np.dot(z_matrix, vector)
                 X[365+p+32*number] = vector[0]
                 Y[365+p+32*number] = vector[1]
-                Z[365+p+32*number] = vector[2] + 3.5
+                Z[365+p+32*number] = vector[2] + 2.5
             
             for p in range(69): #great circles
-                vector = [1.25*math.cos(p*math.pi()*2/78.5),1.25*math.sin(p*math.pi()*2/78.5),0]
+                vector = [1.25*math.sin((p+5)*math.pi*2/78.5),1.25*math.cos((p+5)*math.pi*2/78.5),0]
                 vector = np.dot(tilt_matrix, vector)
-                for i in range(number):
-                    vector = np.det(z_matrix, vector)
+                for i in range(4-number):
+                    vector = np.dot(z_matrix, vector)
                 X[500+p+69*number] = vector[0]
                 Y[500+p+69*number] = vector[1]
-                Z[500+p+69*number] = vector[2] + 3.5 
+                Z[500+p+69*number] = vector[2] + 2.5 
         
             for p in range(18): #windows
-                vector = [0.3*math.cos(p*math.pi()*2/18),0.3*math.sin(p*math.pi()*2/18),1.25]
+                vector = [0.3*math.sin(p*math.pi*2/18),-0.3*math.cos(p*math.pi*2/18),1.25]
                 vector = np.dot(tilt_matrix, vector)
                 for i in range(number):
-                    vector = np.det(z_matrix, vector)
+                    vector = np.dot(z_matrix, vector)
                 X[p+18*number] = vector[0]
                 Y[p+18*number] = vector[1]
-                Z[p+18*number] = vector[2] + 3.5
-                
-            
-            
-                
+                Z[p+18*number] = vector[2] + 2.5
+               
         for p in range(79): #equator (only one of these)
             
-            X[845+p] = 2.5*math.sin(math.pi()*p/78.5*2)
-            Y[845+p] = 2.5*math.cos(math.pi()*p/78.5*2)
-            Z[845+p] = 3.5
+            X[845+p] = 1.25*math.sin(math.pi*p/78.5*2)
+            Y[845+p] = 1.25*math.cos(math.pi*p/78.5*2)
+            Z[845+p] = 2.5
         
+   #     with open('ufo.csv', 'wb') as csvfile:
+   #         spamwriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)    
+   #         for p in range(924):
+   #             print(X[p])
+   #             print(Y[p])
+   #             print(Z[p])
+   #             spamwriter.writerow([X[p], Y[p], Z[p]])
+                
         while True:
 
           #  print ('Color wipe animations.')
@@ -300,8 +321,13 @@ if __name__ == '__main__':
           #  rainbow(strip)
           #  rainbowCycle(strip)
           #  theaterChaseRainbow(strip)
+            clear(strip)
             print('sparkle')
             sparkle(strip)
+            print('Fill up')
+            fillUp(strip, Color(255, 0, 0), X[:])
+            fillUp(strip, Color(255, 0, 0), Y[:])
+            fillUp(strip, Color(255, 0, 0), Z[:])
             print('windowcycle blue')
             windowCycle(strip, Color(255, 0, 0))
             print('windowcycly green')
