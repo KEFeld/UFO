@@ -11,7 +11,7 @@ import argparse
 import random
 import math
 import numpy as np
-import csv
+# import csv
 
 # LED strip configuration:
 LED_COUNT      = 924      # Number of LED pixels.
@@ -335,20 +335,22 @@ if __name__ == '__main__':
             fillUp(strip, Color(255, 0, 0), X[:])
             fillUp(strip, Color(255, 0, 0), Y[:])
             fillUp(strip, Color(255, 0, 0), Z[:])
+            print('Fire fill up')
+            fillUpFire(strip, X[:])
             print('windowcycle blue')
             windowCycle(strip, Color(255, 0, 0))
-            print('windowcycly green')
-            windowCycle(strip, Color(0, 0, 255))
+           # print('windowcycly green')
+           # windowCycle(strip, Color(0, 0, 255))
             print('windowcycle white')
             windowCycle(strip, Color(255, 255, 255))
             print('half window synchronous')
             halfWindowsSync(strip, Color(0, 255, 0))
-            print('half window asynch')
-            halfWindowsAsync(strip, Color(255, 255, 255))
+          #  print('half window asynch')
+          #  halfWindowsAsync(strip, Color(255, 255, 255))
             print('firelegs')
             fireLegs(strip)
-            print('theater chase rainbow')
-            theaterChaseRainbow(strip)
+           # print('theater chase rainbow')
+           # theaterChaseRainbow(strip)
             print('rainbow')
             rainbow(strip)
             print('theaterchase rainbow doube')
