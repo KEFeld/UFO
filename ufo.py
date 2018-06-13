@@ -212,13 +212,20 @@ def rotationMatrix(axis, theta):
                      [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
                      [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
                      
-def fillUp(strip, color, Z, wait_ms = 10):
-    for h in range(700):
+def fillUp(strip, color, ordering, wait_ms = 10):
+    for h in range(min(ordering),max(ordering),(max(ordering)-min(ordering)/100.0)):
         for p in range(924):
-            if Z[p] < (h-300)*0.01:
+            if ordering[p] < h:
                 strip.setPixelColor(p, color)
             else:
                 strip.setPixelColor(p, 0)
+        strip.show()
+        time.sleep(wait_ms/1000.0)
+        
+def fillUpFire(strip, ordering, wait_ms=10):
+    for h in range(min(ordering),max(ordering),(max(ordering)-min(ordering)/100.0)):
+        for p in range(924):
+            strip.setPixelColor(p, fireColor((h-ordering[p])*1500/(max(ordering)-min(ordering))))
         strip.show()
         time.sleep(wait_ms/1000.0)
         
