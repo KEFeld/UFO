@@ -213,7 +213,7 @@ def rotationMatrix(axis, theta):
                      [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
                      
 def fillUp(strip, color, ordering, wait_ms = 10):
-    for h in range(int(min(ordering)),int(max(ordering)),int((max(ordering)-min(ordering)/100.0))):
+    for h in range(int(100*min(ordering)),int(100*max(ordering)),int(max(ordering)-min(ordering))):
         for p in range(924):
             if ordering[p] < h:
                 strip.setPixelColor(p, color)
@@ -223,7 +223,7 @@ def fillUp(strip, color, ordering, wait_ms = 10):
         time.sleep(wait_ms/1000.0)
         
 def fillUpFire(strip, ordering, wait_ms=10):
-    for h in range(int(min(ordering)),int(max(ordering)),int((max(ordering)-min(ordering)/100.0))):
+    for h in range(int(100*min(ordering)),int(100*max(ordering)),int(max(ordering)-min(ordering))):
         for p in range(924):
             strip.setPixelColor(p, fireColor((h-ordering[p])*1500/(max(ordering)-min(ordering))))
         strip.show()
@@ -329,14 +329,15 @@ if __name__ == '__main__':
           #  rainbowCycle(strip)
           #  theaterChaseRainbow(strip)
             clear(strip)
-            print('sparkle')
-            sparkle(strip)
-            print('Fill up')
-            fillUp(strip, Color(255, 0, 0), X[:])
-            fillUp(strip, Color(255, 0, 0), Y[:])
-            fillUp(strip, Color(255, 0, 0), Z[:])
-            print('Fire fill up')
-            fillUpFire(strip, X[:])
+          #  print('sparkle')
+          #  sparkle(strip)
+            for i in range(100):
+                print('Fill up')
+                fillUp(strip, Color(255, 0, 0), X[:])
+                fillUp(strip, Color(255, 0, 0), Y[:])
+                fillUp(strip, Color(255, 0, 0), Z[:])
+                print('Fire fill up')
+                fillUpFire(strip, X[:])
             print('windowcycle blue')
             windowCycle(strip, Color(255, 0, 0))
            # print('windowcycly green')
