@@ -224,11 +224,11 @@ def fillUp(strip, color, ordering, iterations=500, wait_ms = 50):
         time.sleep(wait_ms/1000.0)
         
 def fillUpFire(strip, ordering, wait_ms=500):
-    range = max(ordering)-min(ordering)
-    min = min(ordering)
+    spread = max(ordering)-min(ordering)
+    bottom = min(ordering)
     for i in range(1500):
         for p in range(924):
-            strip.setPixelColor(p, fireColor(i-(ordering[p]-min)*500/range)
+            strip.setPixelColor(p, fireColor(i-(ordering[p]-bottom)*500/spread))
         strip.show()
         time.sleep(wait_ms/1000.0)
         
@@ -266,14 +266,14 @@ if __name__ == '__main__':
         for number in range(5): 
             
             for p in range(25): #legs
-                X[114-p+50*number] = (2.75-0.07*p)*math.sin((0.5-number)*vz)-(0.008*p+0.1)*math.cos((0.5-number)*vz)
-                Y[114-p+50*number] = (2.75-0.07*p)*math.cos((0.5-number)*vz)+(0.008*p+0.1)*math.sin((0.5-number)*vz)
+                X[114-p+50*number] = (2.75-0.07*p)*math.sin((1.5-number)*vz)-(0.006*p+0.1)*math.cos((1.5-number)*vz)
+                Y[114-p+50*number] = (2.75-0.07*p)*math.cos((1.5-number)*vz)+(0.006*p+0.1)*math.sin((1.5-number)*vz)
                 Z[114-p+50*number] = 0.07*p+0.2
-                X[115+p+50*number] = (2.75-0.07*p)*math.sin((0.5-number)*vz)+(0.008*p+0.1)*math.cos((0.5-number)*vz)
-                Y[115+p+50*number] = (2.75-0.07*p)*math.cos((0.5-number)*vz)-(0.008*p+0.1)*math.sin((0.5-number)*vz)
+                X[115+p+50*number] = (2.75-0.07*p)*math.sin((1.5-number)*vz)+(0.006*p+0.1)*math.cos((1.5-number)*vz)
+                Y[115+p+50*number] = (2.75-0.07*p)*math.cos((1.5-number)*vz)-(0.006*p+0.1)*math.sin((1.5-number)*vz)
                 Z[115+p+50*number] = 0.07*p+0.2
-                X[340+p+32*number] = (2.65-0.08*p)*math.sin((1.5-number)*vz)
-                Y[340+p+32*number] = (2.65-0.08*p)*math.cos((1.5-number)*vz)
+                X[340+p+32*number] = (2.65-0.08*p)*math.sin((2.5-number)*vz)
+                Y[340+p+32*number] = (2.65-0.08*p)*math.cos((2.5-number)*vz)
                 Z[340+p+32*number] = 0.06*p
                 
             for p in range(7): #lower ring
