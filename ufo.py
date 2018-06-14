@@ -212,8 +212,9 @@ def rotationMatrix(axis, theta):
                      [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
                      [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
                      
-def fillUp(strip, color, ordering, wait_ms = 50):
-    for h in range(int(500*min(ordering)),int(500*max(ordering)),int(max(ordering)-min(ordering))):
+def fillUp(strip, color, ordering, iterations=500, wait_ms = 50):
+    for i in range(iterations):
+        h = (max(ordering)-min(ordering))*i/iterations+min(ordering)
         for p in range(924):
             if ordering[p] < h:
                 strip.setPixelColor(p, color)
@@ -223,9 +224,11 @@ def fillUp(strip, color, ordering, wait_ms = 50):
         time.sleep(wait_ms/1000.0)
         
 def fillUpFire(strip, ordering, wait_ms=500):
-    for h in range(int(500*min(ordering)),int(500*max(ordering)),int(max(ordering)-min(ordering))):
+    range = max(ordering)-min(ordering)
+    min = min(ordering)
+    for i in range(1500):
         for p in range(924):
-            strip.setPixelColor(p, fireColor(h-ordering[p]*200)*3)
+            strip.setPixelColor(p, fireColor(i-(ordering[p]-min)*500/range)
         strip.show()
         time.sleep(wait_ms/1000.0)
         
@@ -337,7 +340,7 @@ if __name__ == '__main__':
                 fillUp(strip, Color(255, 0, 0), Y[:])
                 fillUp(strip, Color(255, 0, 0), Z[:])
                 print('Fire fill up')
-                fillUpFire(strip, X[:])
+                fillUpFire(strip, Z[:])
             print('windowcycle blue')
             windowCycle(strip, Color(255, 0, 0))
            # print('windowcycly green')
