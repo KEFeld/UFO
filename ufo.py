@@ -82,7 +82,7 @@ def theaterChaseRainbow(strip, wait_ms=50):
             for i in range(0, strip.numPixels(), 3):
                 strip.setPixelColor(i+q, 0)
 
-def fireColor(intensity): #make a color palete going from red through yellow to white
+def fireColor(intensity, debug=0): #make a color palete going from red through yellow to white
     i = int(intensity)
     if i < 0:
         return Color(0,0,0)
@@ -215,7 +215,7 @@ def rotationMatrix(axis, theta):
 def fillUp(strip, color, ordering, wait_ms = 50):
     for h in range(int(500*min(ordering)),int(500*max(ordering)),int(max(ordering)-min(ordering))):
         for p in range(924):
-            if ordering[p] < h:
+            if ordering[p]*500 < h:
                 strip.setPixelColor(p, color)
             else:
                 strip.setPixelColor(p, 0)
@@ -224,8 +224,12 @@ def fillUp(strip, color, ordering, wait_ms = 50):
         
 def fillUpFire(strip, ordering, wait_ms=50):
     for h in range(int(500*min(ordering)),int(500*max(ordering)),int(max(ordering)-min(ordering))):
+        print(h)
         for p in range(924):
             strip.setPixelColor(p, fireColor(h-ordering[p]*200)*3)
+            if p == 600:
+                print((h-ordering[p]*200)*3)
+                print(fireColor((h-ordering[p]*200)*3))
         strip.show()
         time.sleep(wait_ms/1000.0)
         
@@ -313,6 +317,11 @@ if __name__ == '__main__':
    #             print(Y[p])
    #             print(Z[p])
    #             spamwriter.writerow([X[p], Y[p], Z[p]])
+        
+        print(Color(10,0,0))
+        print(Color(0,10,0))
+        print(Color(0,0,10))
+        print(Color(100,0,0))
                 
         while True:
 
@@ -333,11 +342,11 @@ if __name__ == '__main__':
           #  sparkle(strip)
             for i in range(100):
                 print('Fill up')
-                fillUp(strip, Color(255, 0, 0), X[:])
-                fillUp(strip, Color(255, 0, 0), Y[:])
-                fillUp(strip, Color(255, 0, 0), Z[:])
+             #   fillUp(strip, Color(255, 0, 0), X[:])
+             #   fillUp(strip, Color(255, 0, 0), Y[:])
+             #   fillUp(strip, Color(255, 0, 0), Z[:])
                 print('Fire fill up')
-                fillUpFire(strip, X[:])
+                fillUpFire(strip, Z[:])
             print('windowcycle blue')
             windowCycle(strip, Color(255, 0, 0))
            # print('windowcycly green')
