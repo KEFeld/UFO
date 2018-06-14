@@ -222,7 +222,7 @@ def fillUp(strip, color, ordering, wait_ms = 50):
         strip.show()
         time.sleep(wait_ms/1000.0)
         
-def fillUpFire(strip, ordering, wait_ms=50):
+def fillUpFire(strip, ordering, wait_ms=500):
     for h in range(int(500*min(ordering)),int(500*max(ordering)),int(max(ordering)-min(ordering))):
         for p in range(924):
             strip.setPixelColor(p, fireColor(h-ordering[p]*200)*3)
@@ -265,12 +265,12 @@ if __name__ == '__main__':
             for p in range(25): #legs
                 X[114-p+50*number] = (2.75-0.07*p)*math.sin((0.5-number)*vz)-(0.008*p+0.1)*math.cos((0.5-number)*vz)
                 Y[114-p+50*number] = (2.75-0.07*p)*math.cos((0.5-number)*vz)+(0.008*p+0.1)*math.sin((0.5-number)*vz)
-                Z[114-p+50*number] = 0.07*p
+                Z[114-p+50*number] = 0.07*p+0.2
                 X[115+p+50*number] = (2.75-0.07*p)*math.sin((0.5-number)*vz)+(0.008*p+0.1)*math.cos((0.5-number)*vz)
                 Y[115+p+50*number] = (2.75-0.07*p)*math.cos((0.5-number)*vz)-(0.008*p+0.1)*math.sin((0.5-number)*vz)
-                Z[115+p+50*number] = 0.07*p
-                X[340+p+32*number] = (2.65-0.08*p)*math.sin((0.5-number)*vz)
-                Y[340+p+32*number] = (2.65-0.08*p)*math.cos((0.5-number)*vz)
+                Z[115+p+50*number] = 0.07*p+0.2
+                X[340+p+32*number] = (2.65-0.08*p)*math.sin((1.5-number)*vz)
+                Y[340+p+32*number] = (2.65-0.08*p)*math.cos((1.5-number)*vz)
                 Z[340+p+32*number] = 0.06*p
                 
             for p in range(7): #lower ring
@@ -331,7 +331,7 @@ if __name__ == '__main__':
             clear(strip)
           #  print('sparkle')
           #  sparkle(strip)
-            for i in range(100):
+            for i in range(2):
                 print('Fill up')
                 fillUp(strip, Color(255, 0, 0), X[:])
                 fillUp(strip, Color(255, 0, 0), Y[:])
