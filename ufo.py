@@ -385,7 +385,7 @@ if __name__ == '__main__':
            # print('theater chase rainbow')
            # theaterChaseRainbow(strip)
            # print('rainbow')
-           # rainbow(strip)
+           # rainbow(strip) #blah
             print('theaterchase rainbow doube')
             theaterChaseRainbowDouble(strip)
             clear(strip)
