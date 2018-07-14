@@ -94,6 +94,22 @@ def fireColor(intensity): #make a color palete going from red through yellow to 
         return Color(i-510, 255, 255)
     else:
         return Color(255, 255, 255)
+
+def fireColorNew(intensity): #better fire palette. Start adding green before light gets too bright, start addding blue before light gets too green
+    i = int(intensity)
+    if i < 0:
+        return Color(0,0,0)
+    elif i < 150:
+        return Color(0, i, 0)
+    elif i < 255:
+        return Color(0, i, i-150)
+    elif i < 405:
+        return Color(i-255, 255, i-150)
+    elif i < 510:
+        return Color(i-255, 255, 255)
+    else:
+        return Color(255, 255, 255)
+
     
 def leg(strip, number, bottom, top, color): #set value for a range of pixels on a given leg
     for p in range(bottom, top):
@@ -232,6 +248,19 @@ def fillUpFire(strip, ordering, wait_ms=500):
         strip.show()
         time.sleep(wait_ms/1000.0)
         
+def morseCode(strip, data, wait_ms = 50):
+    for i in range(len(data)+strip.numPixels()):
+        for p in range(strip.numPixels()):
+            if (i-p) > -1:
+                if (data[i-p])==TRUE:
+                    strip.setPixelColor(p, wheel((i+p) & 255))
+                else:
+                    strip.setPixelColor(p, 0)
+        strip.show()
+        time.sleep(wait_ms/1000.0)
+                    
+
+        
 # Main program logic follows:
 if __name__ == '__main__':
     # Process arguments
@@ -327,36 +356,36 @@ if __name__ == '__main__':
           #  theaterChase(strip, Color(127, 127, 127))  # White theater chase
           #  theaterChase(strip, Color(127,   0,   0))  # Red theater chase
           #  theaterChase(strip, Color(  0,   0, 127))  # Blue theater chase
-          #  print ('Rainbow animations.')
-          #  rainbow(strip)
+            print ('Rainbow animations.')
+            rainbow(strip)
           #  rainbowCycle(strip)
           #  theaterChaseRainbow(strip)
             clear(strip)
           #  print('sparkle')
           #  sparkle(strip)
-            for i in range(2):
-                print('Fill up')
-                fillUp(strip, Color(255, 0, 0), X[:])
-                fillUp(strip, Color(255, 0, 0), Y[:])
-                fillUp(strip, Color(255, 0, 0), Z[:])
-                print('Fire fill up')
-                fillUpFire(strip, Z[:])
+          #  for i in range(2):
+          #      print('Fill up')
+          #      fillUp(strip, Color(255, 0, 0), X[:])
+          #      fillUp(strip, Color(255, 0, 0), Y[:])
+          #      fillUp(strip, Color(255, 0, 0), Z[:])
+          #      print('Fire fill up')
+          #      fillUpFire(strip, Z[:])
             print('windowcycle blue')
             windowCycle(strip, Color(255, 0, 0))
            # print('windowcycly green')
            # windowCycle(strip, Color(0, 0, 255))
-            print('windowcycle white')
-            windowCycle(strip, Color(255, 255, 255))
-            print('half window synchronous')
-            halfWindowsSync(strip, Color(0, 255, 0))
+          #  print('windowcycle white')
+          #  windowCycle(strip, Color(255, 255, 255))
+          #  print('half window synchronous')
+          #  halfWindowsSync(strip, Color(0, 255, 0))
           #  print('half window asynch')
           #  halfWindowsAsync(strip, Color(255, 255, 255))
             print('firelegs')
             fireLegs(strip)
            # print('theater chase rainbow')
            # theaterChaseRainbow(strip)
-            print('rainbow')
-            rainbow(strip)
+           # print('rainbow')
+           # rainbow(strip)
             print('theaterchase rainbow doube')
             theaterChaseRainbowDouble(strip)
             clear(strip)
